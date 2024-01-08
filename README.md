@@ -49,7 +49,7 @@ Enter your email address: test.acc@test.com
 Enter your password: # (The characters here are hashtags, but bash shows those as comments so I can't put them here)
 Enter the recipient's email address:
 Enter the subject of the email: <>
-Enter the body of the email: <>
+Enter the body of the email:
 This is body text!\nYou have to use \n to make a new line!
 
 ```
