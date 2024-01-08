@@ -29,7 +29,7 @@ public class SendCommand : Command<SendSettings> {
         if (settings.BodyFile != "") {
             body = System.IO.File.ReadAllText(settings.BodyFile);
         } else {
-            body = Console.Prompt(new TextPrompt<string>("Enter the body: "));
+            body = Console.Prompt(new TextPrompt<string>("Enter the body:\n"));
         }
 
         // Create the message   
