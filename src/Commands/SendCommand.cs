@@ -1,117 +1,129 @@
 using Gammer0909.SIGMAMail.Settings;
-using Gammer0909.SIGMAMail.Common;
 using Spectre.Console.Cli;
 using MailKit.Net.Smtp;
+using MimeKit;
 using EmailValidation;
+using Markdig;
+using Spectre.Console;
 
 namespace Gammer0909.SIGMAMail.Commands;
 
 
-public class SendCommand : Command<BaseSettings> {
+public class SendCommand : Command<SendSettings> {
 
-    public override int Execute(CommandContext context, BaseSettings settings) {
+    public override int Execute(CommandContext context, SendSettings settings) {
 
-        // I know i dont NEED the `SendCommand` there, but I think its more readable that way :)
-        var server = SendCommand.GetSmtpClient(settings);
+        // Get the client
+        var client = GetClient(settings);
 
-        // Prompt user for the recipient
-        var recipient = Console.Ask<string>("Who do you want to send the email to?");
-        if (!EmailValidator.Validate(recipient)) {
-            Console.MarkupLine("[red]Invalid email!\nPress Any key to try again[/]");
-            if (settings.Debug) {
-                Console.MarkupLine($"[yellow]Debug: {recipient}[/]");
-            }
-            System.Console.ReadKey();
-            Console.Clear();
-            return Execute(context, settings);
-        }
+        // Get the recipient
+        string recipient = Console.Prompt(new TextPrompt<string>("Enter the recipient's email address: ")
+            .Validate(email => EmailValidator.Validate(email) ? ValidationResult.Success() : ValidationResult.Error("[red bold]Invalid email address.[/]")));
 
-        // Prompt user for the subject
-        var subject = Console.Ask<string>("What is the subject of the email?");
-        if (settings.Debug) {
-            Console.MarkupLine($"[yellow]Debug: {subject}[/]");
-        }
+        // Get the subject
+        string subject = Console.Prompt(new TextPrompt<string>("Enter the subject: "));
 
-        // Prompt user for the body
-        Console.MarkupLine("Would you like to upload a file? [green]Y[/]/[red]N[/]");
-        var upload = Utilities.YesNo();
+        // Check if they have a text file for the body
+        string body = "";        
 
-        string body = "";
-
-        if (upload) {
-            // Prompt user for the file
-            var file = Console.Ask<string>("What is the path to the file?");
-            if (settings.Debug) {
-                Console.MarkupLine($"[yellow]Debug: {file}[/]");
-            }
-
-            // Read the file
-            body = System.IO.File.ReadAllText(file);
+        if (settings.BodyFile != "") {
+            body = System.IO.File.ReadAllText(settings.BodyFile);
         } else {
-            // Prompt user for the body
-            body = Console.Ask<string>("Enter the body of the Email:\n");
-            if (settings.Debug) {
-                Console.MarkupLine($"[yellow]Debug: {body}[/]");
-            }
+            body = Console.Prompt(new TextPrompt<string>("Enter the body: "));
         }
 
+        // Create the message   
+        var message = new MimeMessage();
+        message.From.Add(new MailboxAddress(GetName(client.email), client.email));
 
-        // Prompt user for the confirmation
-        Console.MarkupLine($"[bold]Are you sure you want to send this email to {recipient}?[/] [green]Y[/]/[red]N[/]");
-        var confirm = Utilities.YesNo();
+        message.To.Add(new MailboxAddress(GetName(recipient), recipient));
 
+        message.Subject = subject;
         
+        // But wait! They might have uploaded a file!
+        // We need to check if it's a .MD, .TXT, or .HTML file
+        // If it's a .MD file, we need to convert it to HTML (using Markdig)
+        
+        if (settings.BodyFile != "") {
+            string extension = System.IO.Path.GetExtension(settings.BodyFile);
 
+            if (extension == ".md") {
+                body = Markdown.ToHtml(body);
+            } else if (extension == ".txt") {
+                body = body.Replace("\n", "<br>");
+            }
+
+        }
+
+        message.Body = new TextPart("html") {
+            Text = body
+        };
+
+        // Send the message
+        client.Item1.Send(message);
 
         return 0;
     }
 
-    private static SmtpClient GetSmtpClient(BaseSettings settings) {
+
+    private (SmtpClient, string email) GetClient(SendSettings settings) {
+
         var client = new SmtpClient();
 
-        // Prompt user for the email
-        var email = Console.Ask<string>("What is your email?");
+        // Get the email
+        string email = Console.Prompt(new TextPrompt<string>("Enter your email address: ")
+            .Validate(email => EmailValidator.Validate(email) ? ValidationResult.Success() : ValidationResult.Error("[red bold]Invalid email address.[/]")));
 
-        // Validate email
-        if (!EmailValidator.Validate(email)) {
-            Console.MarkupLine("[red]Invalid email![/]");
-            if (settings.Debug) {
-                Console.MarkupLine($"[yellow]Debug: {email}[/]");
-            }
-            System.Console.ReadKey();
-            Console.Clear();
-            return GetSmtpClient(settings);
-        }
+        // Get the password
+        string password = Console.Prompt(new TextPrompt<string>("Enter your password: ")
+            .Secret('#'));
 
-        // Prompt user for the password
-        var password = Utilities.GetPassword();
+        // Get the host
+        string host = GetHost(email);
 
-        // Auth
-        try {
-            client.Authenticate(email, password);
-        } catch (Exception e) { // Multiple exceptions can be thrown here, so we just catch all of them
-            Console.MarkupLine($"[red bold]An error occured trying to authenticate that Email or Password: {e.Message}[/]\n[bold red]Please try again.[/]]");
-            if (settings.Debug) {
-                Console.MarkupLine($"[yellow]Debug: {e}[/]");
-            }
-            System.Console.ReadKey();
-            Console.Clear();
-            return GetSmtpClient(settings);
-        }
+        // Connect to the host
+        client.Connect(host, 587, false);
 
-        if (settings.Verbose) {
-            Console.MarkupLine($"[green]Authenticated as {email}[/]");
-        }
+        // auth client
+        client.Authenticate(email, password);
 
-        if (settings.Debug) {
-            Console.MarkupLine($"[yellow]Debug: {client}[/]");
-        }
+        
+        // Ship that bad boy back to the Execute method
+        return (client, email);
 
-        return client;
 
     }
 
+    private string GetName(string email) {
+            
+        string[] split = email.Split('@');
+        string name = split[0];
 
+        return name;
+
+    }
+
+    private string GetHost(string email) {
+
+        string[] split = email.Split('@');
+        string domain = split[1];
+
+        switch (domain) {
+            case "gmail.com":
+                return "smtp.gmail.com";
+            case "outlook.com":
+                return "smtp-mail.outlook.com";
+            case "yahoo.com":
+                return "smtp.mail.yahoo.com";
+            case "aol.com":
+                return "smtp.aol.com"; // ????? Is that even possible?!?!
+            case "icloud.com":
+                return "smtp.mail.me.com";
+            default:
+                return "smtp." + domain;
+        }
+
+    }
 
 }
 

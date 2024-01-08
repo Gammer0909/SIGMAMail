@@ -6,7 +6,7 @@ SIGMAMail is an acronym for **S**ecure **I**nterface for **G**lobal **M**essagin
 
 This is a specification as of currently, but I'll update this as progress is made!
 
-[X| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | ] 1% Finished
+[X|X| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | ] 1% Finished
 
 ## Features (Planned)
 
@@ -14,13 +14,14 @@ This is a specification as of currently, but I'll update this as progress is mad
 - [ ] Built-in text editor (TUI Only)
 - [ ] Writing Emails in Markdown (TUI Only)
 - [ ] Uploding Attachments (TUI Only)
+- [ ] Viewing image attachments (TUI Onlys)
 - [ ] Downloading Attachments
 - [ ] Searching Emails (Subject, Sender, Recipient)
 - [ ] Built-in HTML and Markdown Viewer (TUI Only)
 - [ ] Basic Email Features (Read, send, reply, forward, etc.)
 - [ ] IMAP Support
 - [ ] POP3 Support
-- [ ] SMTP Support
+- [x] SMTP Support
 
 More to come!
 
