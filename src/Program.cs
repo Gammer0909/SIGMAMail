@@ -2,6 +2,7 @@
 using Gammer0909.SIGMAMail.Commands;
 using Gammer0909.SIGMAMail.Settings;
 using Spectre.Console.Cli;
+using Spectre.Console;
 
 
 namespace Gammer0909.SIGMAMail;
@@ -21,12 +22,25 @@ public class Program {
             #endif
 
             config.AddCommand<SendCommand>("send")
-                .WithDescription("Send an email through the command line.")
-                .WithExample(new[] {"send", "-f", "body.md"});
+                .WithDescription("Send an email through the command line.");
+
+            config.SetExceptionHandler(e => {
+                if (e is CommandParseException && e.Message.Contains("Unknown command")) {
+                    Console.MarkupLine("[red]Unknown command[/]");
+                } else {
+                    Console.WriteException(e, ExceptionFormats.ShortenEverything);
+                }
+                return 1;
+            });
 
         });
 
+        // Run that mans
         return app.Run(args);
+
+    }
+
+    private static void HandleException(Exception e) {
 
     }
 }
