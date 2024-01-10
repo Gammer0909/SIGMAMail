@@ -23,9 +23,11 @@ public class Program {
 
             config.AddCommand<SendCommand>("send")
                 .WithDescription("Send an email through the command line.");
+            config.AddCommand<ReadCommand>("read")
+                .WithDescription("Read emails through the command line.");
 
             config.SetExceptionHandler(e => {
-                if (e is CommandParseException && e.Message.Contains("Unknown command")) {
+                if (e is CommandParseException) {
                     Console.MarkupLine("[red]Unknown command[/]");
                 } else {
                     Console.WriteException(e, ExceptionFormats.ShortenEverything);

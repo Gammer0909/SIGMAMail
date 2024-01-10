@@ -67,7 +67,7 @@ public class SendCommand : Command<SendSettings> {
     }
 
 
-    private static SmtpClient GetClient(SendSettings settings) {
+    public static SmtpClient GetClient(SendSettings settings) {
 
         var client = new SmtpClient();
 
@@ -90,7 +90,7 @@ public class SendCommand : Command<SendSettings> {
         return client;
     }
 
-    private static MimeMessage GetMsg(SendSettings settings) {
+    public static MimeMessage GetMsg(SendSettings settings) {
 
         var msg = new MimeMessage();
 

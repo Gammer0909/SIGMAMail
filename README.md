@@ -6,7 +6,7 @@ SIGMAMail is an acronym for **S**ecure **I**nterface for **G**lobal **M**essagin
 
 This is a specification as of currently, but I'll update this as progress is made!
 
-[X|X| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | ] 1% Finished
+[X|X|X| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | ] 2% Finished
 
 ## Features (Planned)
 
