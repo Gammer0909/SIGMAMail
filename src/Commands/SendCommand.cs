@@ -81,7 +81,7 @@ public class SendCommand : Command<SendSettings> {
             // Ask the password
             Console.MarkupLine("Enter the password for [bold]{0}[/]", settings.Sender);
             string password = Console.Prompt(
-                new TextPrompt<string>("Password: ")
+                new TextPrompt<string>("")
                     .Secret()
             );
             client.Authenticate(settings.Sender, password);
