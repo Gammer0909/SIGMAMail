@@ -2,11 +2,8 @@ using Gammer0909.SIGMAMail.Settings;
 using Spectre.Console.Cli;
 using MailKit.Net.Smtp;
 using MimeKit;
-using EmailValidation;
 using Markdig;
 using Spectre.Console;
-using Org.BouncyCastle.Crypto.Digests;
-using Markdig.Syntax;
 
 // Using "Console" as "AnsiConsole"
 

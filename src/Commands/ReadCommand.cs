@@ -7,6 +7,8 @@ using Spectre.Console;
 using MimeKit;
 using EmailValidation;
 using Gammer0909.SIGMAMail.Settings;
+using HtmlAgilityPack;
+using System.Web;
 
 namespace Gammer0909.SIGMAMail.Commands;
 
@@ -21,9 +23,8 @@ public class ReadCommand : Command<ReadSettings> {
 
         var messages = GetMessages(settings);
 
-        
+        return RenderMessages(messages, settings);
 
-        return 0;
     }
 
     private int RenderMessages(List<MimeMessage> messages, ReadSettings settings) {
@@ -43,7 +44,7 @@ public class ReadCommand : Command<ReadSettings> {
 
             string subject = msg.Subject;
 
-            if (subject.Length > 10) {
+            if (subject.Length > 20) {
                 subject = subject.Substring(0, 6) + "...";
             }
 
@@ -69,8 +70,6 @@ public class ReadCommand : Command<ReadSettings> {
         // Render the message
         Console.Clear();
 
-        // Build the table
-        var table = new Table();
 
         // I want it like this (minified, it'll be bigger)
         /*
@@ -86,21 +85,33 @@ public class ReadCommand : Command<ReadSettings> {
         +-----------------+-----------------+   
         */
 
-        if (settings.ForceAscii) {
-            table.Border = TableBorder.Ascii;
-        } else {
-            table.Border = TableBorder.Rounded;
-        }
+        var SubjectPanel = new Panel($"Subject - {message.Subject}")
+            .Expand()
+            .Header("[bold]Subject[/]");
+        SubjectPanel.Border = BoxBorder.Rounded;
+        var from = message.From.ToString();
+        from.Replace("<", "");
+        from.Replace(">", "");
+        from.Replace("\"", "");
+        var FromPanel = new Panel($"From - {message.From}");
+        FromPanel.Header("[bold]From[/]");
+        FromPanel.Expand();
+        FromPanel.Border = BoxBorder.Rounded;
 
-        table.AddRow($"From - {message.From}");
-        table.AddRow($"Subject - {message.Subject}");
-        table.AddRow(
-            new Panel(message.TextBody)
-                .Expand()
-                .RoundedBorder()
-        );
+        // Convert the HTML body to markdown, cause it's more readable
+        HtmlDocument doc = new HtmlDocument();
+        doc.LoadHtml(message.HtmlBody);
+        string markdown = doc.DocumentNode.InnerText;
 
-        Console.Write(table);
+        var BodyPanel = new Panel(HttpUtility.HtmlDecode(markdown));
+        BodyPanel.Header("[bold]Body[/]");
+        BodyPanel.Expand();
+        BodyPanel.Border = BoxBorder.Rounded;
+
+        // Render them in order
+        Console.Write(FromPanel);
+        Console.Write(SubjectPanel);
+        Console.Write(BodyPanel);
 
         // Ask if they want to reply
         var reply = Console.Confirm("Would you like to reply to this email?");
@@ -119,7 +130,9 @@ public class ReadCommand : Command<ReadSettings> {
             return 0;
         
         }
+#pragma warning disable CS0162 // Unreachable code detected
         return 0;
+#pragma warning restore CS0162 // Unreachable code detected
 
     }
 
@@ -182,12 +195,10 @@ public class ReadCommand : Command<ReadSettings> {
 
 
                 a.Status("[green]Connecting to SMTP server...[/]");
-                // Thread.Sleep(1000);
 
                 a.Status("[green]Connected![/]");
 
                 a.Status("[green]Sending email...[/]");
-                // Thread.Sleep(1000);
 
                 var msg = SendCommand.GetMsg(sendSettings);
                 try {
