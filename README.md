@@ -1,6 +1,6 @@
 # SIGMAMail Spec
 
-SIGMAMail is a WIP Console-based Email client, written in C#, using Spectre.Console, and Mailkit.
+SIGMAMail is a WIP Console-based Email client, written in C#, using Spectre.Console and Mailkit.
 
 SIGMAMail is an acronym for **S**ecure **I**nterface for **G**lobal **M**essaging **A**pplications
 
@@ -10,15 +10,17 @@ This is a specification as of currently, but I'll update this as progress is mad
 
 ## Features (Planned)
 
-- [ ] TUI Based and CLI Based interfaces
-- [ ] Built-in text editor (TUI Only)
-- [ ] Writing Emails in Markdown (TUI Only, however you can upload one to the CLI)
-- [ ] Uploding Attachments (TUI Only)
-- [ ] Viewing image attachments as ASCII Images (TUI Only)
+**NOTE: THE CLI INTERFACE HAS BEEN SCRAPPED**
+
+- [ ] TUI Based
+- [ ] Built-in text editor
+- [ ] Writing Emails in Markdown
+- [ ] Uploding Attachments
+- [ ] Viewing image attachments as ASCII Images
 - [ ] Downloading Attachments
-- [ ] Searching Emails (Subject, Sender, Recipient)
-- [ ] Built-in HTML and Markdown Viewer (TUI Only)
-- [ ] Basic Email Features (Read, send, reply, forward, etc.)
+- [ ] Searching Emails (By Subject, Sender, Recipient)
+- [ ] Built-in HTML and Markdown Viewer
+- [ ] Basic Email Features
 - [ ] IMAP Support
 - [ ] POP3 Support
 - [ ] SMTP Support
