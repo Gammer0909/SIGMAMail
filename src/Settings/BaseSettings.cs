@@ -3,20 +3,17 @@ using Spectre.Console.Cli;
 namespace Gammer0909.SIGMAMail.Settings;
 
 /// <summary>
-/// The base settings for all commands.
+/// Base settings for all commands (The root command)
 /// </summary>
 public class BaseSettings : CommandSettings {
-
-    [CommandOption("-v|--verbose")]
-    public bool Verbose { get; set; } = false;
-
+    
     [CommandOption("-d|--debug")]
-    public bool Debug { get; set; } = false;
+    public bool Debug { get; set; }
 
-    [CommandOption("-n|--nocolor")]
-    public bool NoColor { get; set; } = false;
+    [CommandOption("-n|--no-color")]
+    public bool NoColor { get; set; }
 
-    [CommandOption("-a|--ascii")]
-    public bool ForceAscii { get; set; } = false;
+    [CommandOption("-a|--force-ascii")]
+    public bool ForceAscii { get; set; }
 
 }

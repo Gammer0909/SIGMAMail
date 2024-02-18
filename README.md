@@ -6,7 +6,7 @@ SIGMAMail is an acronym for **S**ecure **I**nterface for **G**lobal **M**essagin
 
 This is a specification as of currently, but I'll update this as progress is made!
 
-[X|X|X| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | ] 2% Finished
+[ | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | ] 0% Finished
 
 ## Features (Planned)
 
@@ -21,7 +21,7 @@ This is a specification as of currently, but I'll update this as progress is mad
 - [ ] Basic Email Features (Read, send, reply, forward, etc.)
 - [ ] IMAP Support
 - [ ] POP3 Support
-- [x] SMTP Support
+- [ ] SMTP Support
 
 More to come!
 
